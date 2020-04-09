@@ -6,13 +6,21 @@ const resolvers = {
     Date: graphql_scalars_1.DateTimeResolver,
     URL: graphql_scalars_1.URLResolver,
     Chat: {
+        messages(chat) {
+            return db_1.messages.filter((m) => chat.messages.includes(m.id));
+        },
         lastMessage(chat) {
-            return db_1.messages.find(m => m.id === chat.lastMessage);
+            const lastMessage = chat.messages[chat.messages.length - 1];
+            return db_1.messages.find((m) => m.id === lastMessage);
         },
     },
     Query: {
+        // Queryの中に、Chatがあるので、スコープ範囲を間違えないように。
         chats() {
             return db_1.chats;
+        },
+        chat(root, { chatId }) {
+            return db_1.chats.find(c => c.id === chatId);
         },
     },
 };
